@@ -28,12 +28,29 @@ def imageBackground(imageData : np.ndarray) -> float:
         An estimate of the overall background of the image
 
     """
+    #THIS CODE IS EXPERIMENTAL - NEEDS TEST TO ENSURE REPRESENTATIONAL ACCURACY
+    total = 0
+    numPixelsCounted = 0
+    width = imageData.shape[0]
+    height = imageData.shape[1]
+    lowerDim = min(width, height)
+    
+    for count in range(0, lowerDim):
+        total += imageData[count][count]
+        total += imageData[lowerDim - count][count]
+        total += imageData[count][lowerDim - count]
+        total += imageData[lowerDim - count][lowerDim - count]
+        numPixelsCounted += 4
+    
+    prelimAvg = total / numPixelsCounted
+    #END OF EXPERIMENTAL CODE
+    
     total = 0
     numPixelsCounted = 0
     
     for row in imageData:
         for element in row:
-            if element < 6000: #the logic here needs to be a lot smarter
+            if element < (1.25 * prelimAvg): #previously hard-coded as 6000
                 total += element
                 numPixelsCounted += 1
     
