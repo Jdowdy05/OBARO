@@ -9,37 +9,24 @@ from matplotlib import pyplot
 import xml.etree.cElementTree as ET
 #from xml.etree.ElementTree import XML, Element
 
-tree = ET.parse("517-seed1000.xml")
-root = tree.getroot()
-
-dataFromXmlV1 = []
-
-index = 0
-for child in root:
-    signal = int(child[4].attrib['value'])
-    background = int(child[10].attrib['value'])
+def pullFromXml(filePath):
+    tree = ET.parse(filePath)
+    root = tree.getroot()
     
-    dataFromXmlV1.append((index, signal, background))
+    dataSet = []
     
-    index += 1
-
-tree = ET.parse("5323-seed1000.xml")
-root = tree.getroot()
-
-dataFromXmlV3 = []
-
-index = 0
-for child in root:
-    signal = int(child[4].attrib['value'])
-    background = int(child[10].attrib['value'])
+    index = 0
+    for child in root:
+        signal = int(child[4].attrib['value'])
+        background = int(child[10].attrib['value'])
+        dataSet.append((index, signal, background))
+        index += 1
     
-    dataFromXmlV3.append((index, signal, background))
-    
-    index += 1
+    return dataSet
 
 #NEXT FUNCTIONS ADAPTED FROM EARLIER GraphScript SCRIPT
 
-def scatterPlot(dataSet1, version1, dataSet2=None, version2=None):
+def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
     index1 = []
     signal1 = []
     background1 = []
@@ -51,8 +38,8 @@ def scatterPlot(dataSet1, version1, dataSet2=None, version2=None):
     
     pyplot.figure(figsize=(8,6), dpi=100)
     
-    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in " + version1 + ")"), c="blue")
-    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in " + version1 + ")"), c="red")
+    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="blue")
+    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="red")
     
     numObjects = len(index1)
     fileLabel = version1
@@ -67,13 +54,13 @@ def scatterPlot(dataSet1, version1, dataSet2=None, version2=None):
             signal2.append(j[1])
             background2.append(j[2])
         
-        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in " + version2 + ")"), c="green")
-        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in " + version2 + ")"), c="fuchsia")
+        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="green")
+        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="fuchsia")
         
         numObjects += len(index2)
         fileLabel = "both"
     
-    pyplot.title("Surface Brightness of Brightest Astronomical Object in Each FITS Image (seed 1000)")
+    pyplot.title("Surface Brightness of Brightest Astronomical Object in Each FITS Image (seed " + seedNum + ")")
     pyplot.xlabel("Index of Astronomical Object (" + str(numObjects) + " objects)")
     pyplot.ylabel("Surface Brightness")
     pyplot.xlim(xmin=0)
@@ -81,10 +68,10 @@ def scatterPlot(dataSet1, version1, dataSet2=None, version2=None):
     pyplot.yticks([0, 200000, 400000, 600000, 800000, 1000000, 1200000, 1400000, 1600000], [0, 200000, 400000, 600000, 800000, 1000000, 1200000, 1400000, 1600000])
     pyplot.legend()
     
-    pyplot.savefig("plot_images\scatter_" + fileLabel + ".png", dpi='figure')
+    pyplot.savefig("plot_images\scatter_" + fileLabel + "_seed" + seedNum + ".png", dpi='figure')
     pyplot.show()
 
-def plotSignalHist(dataSet, binSize, version, includeBackground=False):
+def plotSignalHist(dataSet, binSize, version, seedNum, includeBackground=False):
     
     signalValues = []
     backgroundValues = []
@@ -107,7 +94,7 @@ def plotSignalHist(dataSet, binSize, version, includeBackground=False):
     if includeBackground:
         pyplot.hist(backgroundValues, bins = binList, label="Background Surface Brightness (" + str(len(dataSet)) + " Objects)", alpha=0.5)
     
-    pyplot.title("Distribution of Surface Brightness (" + version + " - seed1000)")
+    pyplot.title("Distribution of Surface Brightness (PhoSim " + version + " - seed " + seedNum + ")")
     pyplot.xlabel("Surface Brightness of Brightest Astronomical Object in Each FITS Image")
     pyplot.ylabel("No. of Astronomical Objects / " + str(binSize) + " (SBU)")
     pyplot.xlim(0, 1600000)
@@ -116,7 +103,7 @@ def plotSignalHist(dataSet, binSize, version, includeBackground=False):
     pyplot.legend()
     
     if (includeBackground):
-        pyplot.savefig("plot_images\histogram_" + version + "_" + str(binSize) + "_both.png", dpi='figure')
+        pyplot.savefig("plot_images\histogram_" + version + "_seed" + seedNum + "_" + str(binSize) + "_both.png", dpi='figure')
     else:
-        pyplot.savefig("plot_images\histogram_" + version + "_" + str(binSize) + "_object.png", dpi='figure')
+        pyplot.savefig("plot_images\histogram_" + version + "_seed" + seedNum + "_" + str(binSize) + "_object.png", dpi='figure')
     pyplot.show()
