@@ -79,7 +79,7 @@ def scatterPlotNew(dataSet):
     pyplot.yticks(yTickValues, yTickLabels)
     pyplot.legend()
     
-    pyplot.savefig(("scatter" + fileNameAddOn + ".png"), dpi='figure')
+    pyplot.savefig(("plot_images\scatter" + fileNameAddOn + ".png"), dpi='figure')
     pyplot.show()
 
 #NEXT FUNCTIONS ADAPTED FROM EARLIER GraphScript SCRIPT
