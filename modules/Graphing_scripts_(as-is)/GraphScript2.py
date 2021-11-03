@@ -38,8 +38,8 @@ def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
     
     pyplot.figure(figsize=(8,6), dpi=100)
     
-    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="blue")
-    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="red")
+    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="green")
+    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="fuchsia")
     
     numObjects = len(index1)
     fileLabel = version1
@@ -54,8 +54,8 @@ def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
             signal2.append(j[1])
             background2.append(j[2])
         
-        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="green")
-        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="fuchsia")
+        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="blue")
+        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="red")
         
         numObjects += len(index2)
         fileLabel = "both"
