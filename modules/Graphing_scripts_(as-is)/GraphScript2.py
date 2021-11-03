@@ -24,6 +24,64 @@ def pullFromXml(filePath):
     
     return dataSet
 
+# CAUTION: The scatterPlotNew function is new and designed to plot multiple sets
+# of data side-by-side. It is designed to work with a very specific input format.
+# This is an example:
+# dataSet = [(data1, "5.1.7", "1000"), (data2, "5.1.7", "1001"), (data3, "5.3.23", "1000"), ... ]
+# where data1, data2, data3, etc. were generated from xml files by the pullFromXml
+# function (defined above).
+#comment date: 11/03/2021
+
+def scatterPlotNew(dataSet):
+    pyplot.figure(figsize=(8,6), dpi=100)
+    
+    fileNameAddOn = ""
+    brightestValue = 0
+    totalObjects = 0
+    for data in dataSet:
+        index = []
+        signal = []
+        background = []
+        
+        numObjects = len(data[0])
+        
+        for j in data[0]:
+            index.append(j[0] + totalObjects)
+            signal.append(j[1])
+            background.append(j[2])
+        
+        if max(signal) > brightestValue:
+            brightestValue = max(signal)
+        
+        pyplot.scatter(index, signal, s=3, label=("PhoSim " + data[1] + " seed " + data[2] + " AOB (" + str(numObjects) + " objects)"))
+        pyplot.scatter(index, background, s=3, label=("PhoSim " + data[1] + " seed " + data[2] + " BB (" + str(numObjects) + " objects)"))
+        
+        totalObjects += numObjects
+        fileNameAddOn += ("_" + data[1] + "s" + data[2])
+    
+    yTickValues = []
+    yTickLabels = []
+    
+    count = 0
+    while True:
+        yTickValues.append(count)
+        yTickLabels.append(str(count))
+        
+        if count > brightestValue:
+            break;
+        count += 200000
+    
+    pyplot.title("Surface Brightness of Brightest Astronomical Object in Each FITS Image")
+    pyplot.xlabel("Index of Astronomical Object (" + str(totalObjects) + " objects in total)")
+    pyplot.ylabel("Surface Brightness")
+    pyplot.xlim(xmin=0)
+    pyplot.ylim(0, max(yTickValues))
+    pyplot.yticks(yTickValues, yTickLabels)
+    pyplot.legend()
+    
+    pyplot.savefig(("scatter" + fileNameAddOn + ".png"), dpi='figure')
+    pyplot.show()
+
 #NEXT FUNCTIONS ADAPTED FROM EARLIER GraphScript SCRIPT
 
 def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
@@ -38,8 +96,8 @@ def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
     
     pyplot.figure(figsize=(8,6), dpi=100)
     
-    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="green")
-    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="fuchsia")
+    pyplot.scatter(index1, signal1, s=3, label=("Object Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="blue")
+    pyplot.scatter(index1, background1, s=3, label=("Background Brightness (" + str(len(index1)) + " objects in PhoSim " + version1 + ")"), c="red")
     
     numObjects = len(index1)
     fileLabel = version1
@@ -54,8 +112,8 @@ def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
             signal2.append(j[1])
             background2.append(j[2])
         
-        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="blue")
-        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="red")
+        pyplot.scatter(index2, signal2, s=3, label=("Object Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="green")
+        pyplot.scatter(index2, background2, s=3, label=("Background Brightness (" + str(len(index2)) + " objects in PhoSim " + version2 + ")"), c="fuchsia")
         
         numObjects += len(index2)
         fileLabel = "both"
