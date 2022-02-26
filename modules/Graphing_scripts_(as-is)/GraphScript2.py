@@ -71,7 +71,7 @@ def scatterPlotNew(dataSet):
             break;
         count += 200000
     
-    pyplot.title("Surface Brightness of Brightest Astronomical Object in Each FITS Image")
+    pyplot.title("Surface Brightness of All Astronomical Objects")
     pyplot.xlabel("Index of Astronomical Object (" + str(totalObjects) + " objects in total)")
     pyplot.ylabel("Surface Brightness")
     pyplot.xlim(xmin=0)
@@ -118,7 +118,7 @@ def scatterPlot(dataSet1, version1, seedNum, dataSet2=None, version2=None):
         numObjects += len(index2)
         fileLabel = "both"
     
-    pyplot.title("Surface Brightness of Brightest Astronomical Object in Each FITS Image (seed " + seedNum + ")")
+    pyplot.title("Surface Brightness of All Astronomical Objects (seed " + seedNum + ")")
     pyplot.xlabel("Index of Astronomical Object (" + str(numObjects) + " objects)")
     pyplot.ylabel("Surface Brightness")
     pyplot.xlim(xmin=0)
@@ -153,7 +153,7 @@ def plotSignalHist(dataSet, binSize, version, seedNum, includeBackground=False):
         pyplot.hist(backgroundValues, bins = binList, label="Background Surface Brightness (" + str(len(dataSet)) + " Objects)", alpha=0.5)
     
     pyplot.title("Distribution of Surface Brightness (PhoSim " + version + " - seed " + seedNum + ")")
-    pyplot.xlabel("Surface Brightness of Brightest Astronomical Object in Each FITS Image")
+    pyplot.xlabel("Surface Brightness of Astronomical Object")
     pyplot.ylabel("No. of Astronomical Objects / " + str(binSize) + " (SBU)")
     pyplot.xlim(0, 1600000)
     pyplot.ylim(ymin=0)
