@@ -121,19 +121,23 @@ import PointSpreadFunction
 
 class FITS:
 
-    def __init__(self) -> 'tuple[int, Element]':
+    def __init__(self):
         pass
         
 
 
-    def astr_main(lock, cur_path : list, cur_fits : Element, num : int, xml_name : str, xml_lst : list, segment_num : int) -> 'tuple[int, Element]':
+    def astr_main(lock, cur_path : list, cur_fits : Element, num : int, xml_name : str, xml_lst : list) -> 'tuple[int, Element]':
         
-        fits = FITS.load_fits(cur_path, segment_num)
-        
-        astr_object = FITS.astr_object(fits["data"], fits["size"]) #this is why it loads an image twice goober
-        if astr_object["object_count"] > 0:
-            FITS.data_storing(lock, FITS.object_calc(astr_object["astr_object"], astr_object["data"], fits["header"], astr_object["size"], astr_object["object_count"]), astr_object["object_count"], cur_fits, num, xml_lst)
-            #XMLFileHandling.write_XML(root_tree, xml_name)
+        segmnt_start, segmnt_end = FITS.fileSegments(cur_path)
+
+        for i in range(segmnt_start,segmnt_end):
+            
+            fits = FITS.load_fits(cur_path, i)
+            
+            astr_object = FITS.astr_object(fits["data"], fits["size"]) #this is why it loads an image twice goober
+            if astr_object["object_count"] > 0:
+                FITS.data_storing(lock, FITS.object_calc(astr_object["astr_object"], astr_object["data"], fits["header"], astr_object["size"], astr_object["object_count"]), astr_object["object_count"], cur_fits, num, xml_lst)
+                #XMLFileHandling.write_XML(root_tree, xml_name)
 
             
 
@@ -322,8 +326,10 @@ if __name__ == '__main__':
 
     root_tree = XMLFileHandling.XML_generation()
     dir_name = input("Enter path to fits directory:")
-
     xml_name = input("Save XML file as(seed-phosim ver):")
+    threads = int(input("Enter number of threads to use: "))
+
+
     xml_name = pwd + "/output/" + xml_name
     path_list, name_list = FitsFileManaging.fits_locator(dir_name)  #gives paths of files and names of files
     #path_list.reverse()
@@ -346,38 +352,20 @@ if __name__ == '__main__':
 
         for x in range(len(name_list)):
 
+            p = Process(target=FITS.astr_main, args=(lock, path_list[x], name_list[x], x, xml_name, xml_lst))
+            p.start()
             
-            for segment_count in range(1,17):
+            processes.append(p)
 
-                p = Process(target=FITS.astr_main, args=(lock, path_list[x], name_list[x], x, xml_name, xml_lst, segment_count))
-                p.start()
-                segment_count+=1
-                processes.append(p)
-
-                if (segment_count+16*x)%16 == 0 or (segment_count == 16 and x == (len(name_list))):
-                    #if x == 0:
-                        #continue
-                    for p in processes:
-                        if len(processes) == 0:
-                            continue
-                        p.join()    
-
-                    processes.clear()
-            """  
-            if x%1 == 0 or x == (len(name_list)):
-                #if x == 0:
-                    #continue
+            if (len(processes))%threads == 0 or x == (len(name_list)):
+                
+                
                 for p in processes:
-                    if len(processes) == 0:
-                        continue
                     p.join()    
 
                 processes.clear()
-            """
-        for p in processes:
-            if len(processes) == 0:
-                continue
-            p.join()    
+        
+            
 
         
         for x in range(len(xml_lst)):
