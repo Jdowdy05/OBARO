@@ -128,7 +128,7 @@ class FITS:
 
     def astr_main(lock, cur_path : list, cur_fits : Element, num : int, xml_name : str, xml_lst : list) -> 'tuple[int, Element]':
         
-        segmnt_start, segmnt_end = FITS.fileSegments(cur_path)
+        segmnt_start, segmnt_end = FitsFileManaging.fileSegments(cur_path)
 
         for i in range(segmnt_start,segmnt_end):
             
@@ -263,7 +263,7 @@ class FITS:
 
     def object_calc(astr_object : np.ndarray, data : np.ndarray, header : dict, size : np.ndarray, object_count : int) -> np.ndarray:
         s=3
-        astr_object_data = np.empty((0, 14), float)
+        astr_object_data = np.empty((0, 16), float)
         
         for u in range(object_count):
 
@@ -283,14 +283,15 @@ class FITS:
 
             object_mean, background_mean = Calculations.mean(object_sum, background_sum, object_pixel_count, background_pixel_count)
 
-            #mag, flux = Calculations.magnitude(data, header, size, object_sum, object_pixel_count, int(astr_object[u][8]))
+            flux, mag = Calculations.magnitude(data, header, size, object_sum, object_pixel_count, int(astr_object[u][8]))
+            
             
             #PointSpreadFunction.FWHM(int(astr_object[u][0]), int(astr_object[u][1]), int(astr_object[u][2]), int(astr_object[u][3]), int(astr_object[u][4]), int(astr_object[u][5]), int(astr_object[u][8]), header, data, size)
         
             astr_object_data = np.append(astr_object_data, np.array([[object_error, background_error,
                 object_surface_brightness, background_surface_brightness, object_area,  # used to more easily return data.
                 background_area, object_surface_error, background_surface_error, object_mean, background_mean, object_sum,  
-                background_sum, object_pixel_count, background_pixel_count]]), axis=0)   
+                background_sum, object_pixel_count, background_pixel_count, flux, mag]]), axis=0)   
 
             #print(astr_object_data[u])
         return astr_object_data
@@ -306,7 +307,8 @@ class FITS:
                 
                 xml_lst.append([count, cur_fits, float(astr_object_data[u][0]), float(astr_object_data[u][1]), 
                             float(astr_object_data[u][2]), float(astr_object_data[u][3]), float(astr_object_data[u][4]), float(astr_object_data[u][5]), float(astr_object_data[u][6]),
-                            float(astr_object_data[u][7]), float(astr_object_data[u][8]), float(astr_object_data[u][9]), float(astr_object_data[u][12]), float(astr_object_data[u][13]),u])
+                            float(astr_object_data[u][7]), float(astr_object_data[u][8]), float(astr_object_data[u][9]), float(astr_object_data[u][12]), float(astr_object_data[u][13]), 
+                            float(astr_object_data[u][14]), float(astr_object_data[u][15]), u])
                
             
         finally:
@@ -337,9 +339,10 @@ if __name__ == '__main__':
     print(name_list[0])  
     print(path_list[0])                             
     time.sleep(3)
-    len(name_list)
+    numOfFiles = len(name_list)
     segment_max = 16
-    
+    if threads > numOfFiles:
+        threads = numOfFiles
     sys.setrecursionlimit(4300)
     
     

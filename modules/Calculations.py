@@ -122,7 +122,7 @@ def mean(object_sum : int, background_sum : int, object_pix : int, background_pi
     return object_mean, background_mean
 
 def magnitude(data, header, size, obj_sum, object_pixel_count, local_background):
-    OAS = True
+    OAS = False
     gain = header["Gain"]
     exp_time = header["Exptime"]
     try: 
@@ -136,11 +136,12 @@ def magnitude(data, header, size, obj_sum, object_pixel_count, local_background)
         sig_above_back = obj_sum - (object_pixel_count * local_background)
         total_flux = (gain*sig_above_back)/exp_time # gain * ADU
         mag = mag_zp + - 2.5*log(gain*sig_above_back/exp_time)
-        return gain, exp_time, sig_above_back, total_flux, mag_zp, mag
+        return sig_above_back, total_flux, mag_zp, mag
     #mag = mag_zero_point - 2.5*log(flux) //still needs work...zero point mag may be hard to calculate as we have no reference star
     #inst_mag = - 2.5*log(sig_above_back/exp_time)
     if OAS == False:
         sig_above_back = obj_sum - (object_pixel_count * local_background)
         total_flux = (gain*obj_sum)/exp_time # ADU/exp_time or total number of photons over exposuretime 
         mag = mag_zp + - 2.5*log(gain*obj_sum/exp_time)
-        return gain, exp_time, obj_sum, total_flux, mag_zp, mag
+        
+        return total_flux, mag

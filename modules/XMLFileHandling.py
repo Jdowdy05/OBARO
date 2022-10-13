@@ -64,7 +64,7 @@ def XML_store_data(objects_tree : Element, n : int, name_list : "list[str]", obj
 
 def XML_store_data(objects_tree : Element, n : int, name_list : "list[str]", object_error : float, background_error : float, object_surface_brightness : float,
     background_surface_brightness : float, object_area : float, background_area : float, object_surface_error : float, background_surface_error : float,
-    object_mean : float, background_mean : float, object_pixel_count : int, background_pixel_count : int, object_number : int) -> Element:
+    object_mean : float, background_mean : float, object_pixel_count : int, background_pixel_count : int, flux : float, mag : float, object_number : int) -> Element:
     
     
         
@@ -77,6 +77,8 @@ def XML_store_data(objects_tree : Element, n : int, name_list : "list[str]", obj
     ET.SubElement(dataField, "Object_Surface_Brightness", object_surface_brightness = str(object_surface_brightness)).text
     ET.SubElement(dataField, "Object_Surface_Brightness_Error", object_surface_brightness_error = str(object_surface_error)).text
     ET.SubElement(dataField, "Object_Pixel_Count", object_pixel_count = str(object_pixel_count)).text
+    ET.SubElement(dataField, "Object Flux", flux = str(flux)).text
+    ET.SubElement(dataField, "Object Flux", mag = str(mag)).text
     ET.SubElement(dataField, "Background_Mean_Pixel_Value", background_mean = str(background_mean)).text
     ET.SubElement(dataField, "Background_Total_Pixel_Value_Error", background_error = str(background_error)).text
     ET.SubElement(dataField, "Background_Region_Area", background_area = str(background_area)).text
